@@ -8,7 +8,7 @@ import {
   getDisponibles,
   crearTurno,
 } from "../api/Api";
-import "../css/page.css";
+import "../css/Page.css";
 
 function AgendaPage() {
   const [servicios, setServicios] = useState([]);
@@ -104,3 +104,4 @@ function AgendaPage() {
 }
 
 export default AgendaPage;
+
