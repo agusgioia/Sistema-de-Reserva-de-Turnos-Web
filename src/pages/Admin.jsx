@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { getServicios } from "../api/Api";
-import "../css/page.css";
+import "../css/Page.css";
 
 function AdminPage() {
   const [servicios, setServicios] = useState([]);
@@ -28,3 +28,4 @@ function AdminPage() {
 }
 
 export default AdminPage;
+
