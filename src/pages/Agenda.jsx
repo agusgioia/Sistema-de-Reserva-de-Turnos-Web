@@ -55,14 +55,16 @@ function AgendaPage() {
       });
   }, []);
 
-  const buscarHorarios = async () => {
+  const buscarHorarios = async ({ limpiarMensaje = true } = {}) => {
     if (!servicio || !empleado || !fechaStr) {
       setMensaje('Seleccioná servicio, empleado y fecha antes de buscar horarios.');
       return;
     }
 
     setLoading(true);
-    setMensaje('');
+    if (limpiarMensaje) {
+      setMensaje('');
+    }
 
     try {
       const res = await getDisponibles(empleado.id, servicio.id, fechaStr);
@@ -91,6 +93,7 @@ function AgendaPage() {
       clienteTelefono,
       servicioId: servicio.id,
       empleadoId: empleado.id,
+      estado: 'RESERVADO',
     };
 
     setLoading(true);
@@ -98,8 +101,8 @@ function AgendaPage() {
 
     try {
       await crearTurno(turno);
-      setMensaje('Turno reservado correctamente.');
-      await buscarHorarios();
+      await buscarHorarios({ limpiarMensaje: false });
+      setMensaje('Turno reservado correctamente y estado actualizado a RESERVADO.');
     } catch (error) {
       setMensaje(`No se pudo reservar el turno: ${error.message}`);
     } finally {
@@ -154,7 +157,7 @@ function AgendaPage() {
 
         <Button
           label={loading ? 'Buscando...' : 'Buscar horarios'}
-          onClick={buscarHorarios}
+          onClick={() => buscarHorarios()}
           disabled={loading}
           style={{ marginBottom: '1rem' }}
         />
