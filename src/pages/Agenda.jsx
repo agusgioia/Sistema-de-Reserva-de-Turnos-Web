@@ -9,6 +9,7 @@ import {
   getDisponibles,
   crearTurno,
 } from '../api/Api';
+import { useAuth } from '../context/useAuth';
 import '../css/Page.css';
 
 function formatDate(date) {
@@ -30,6 +31,8 @@ function addMinutes(time, minutes) {
 }
 
 function AgendaPage() {
+  const { session } = useAuth();
+
   const [servicios, setServicios] = useState([]);
   const [empleados, setEmpleados] = useState([]);
   const [horarios, setHorarios] = useState([]);
@@ -45,15 +48,18 @@ function AgendaPage() {
   const fechaStr = useMemo(() => formatDate(fecha), [fecha]);
 
   useEffect(() => {
-    Promise.all([getServicios(1), getEmpleados(1)])
+    const tenantId = session?.tenant?.id;
+    if (!tenantId) return;
+
+    Promise.all([getServicios(tenantId), getEmpleados(tenantId)])
       .then(([serviciosRes, empleadosRes]) => {
-        setServicios(serviciosRes);
-        setEmpleados(empleadosRes);
+        setServicios(serviciosRes || []);
+        setEmpleados(empleadosRes || []);
       })
       .catch((error) => {
         setMensaje(`No se pudieron cargar servicios/empleados: ${error.message}`);
       });
-  }, []);
+  }, [session?.tenant?.id]);
 
   const buscarHorarios = async ({ limpiarMensaje = true } = {}) => {
     if (!servicio || !empleado || !fechaStr) {
@@ -68,8 +74,8 @@ function AgendaPage() {
 
     try {
       const res = await getDisponibles(empleado.id, servicio.id, fechaStr);
-      setHorarios(res);
-      if (!res.length) {
+      setHorarios(res || []);
+      if (!res?.length) {
         setMensaje('No hay horarios disponibles para esa selección.');
       }
     } catch (error) {
@@ -113,6 +119,7 @@ function AgendaPage() {
   return (
     <div className="page">
       <h1 className="page-title">Reservar turno</h1>
+      <p>Negocio activo: {session?.tenant?.name}</p>
 
       <div className="page-content">
         <Dropdown

@@ -1,0 +1,23 @@
+import { Navigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../context/useAuth';
+
+function ProtectedRoute({ children, allowedRoles }) {
+  const { isAuthenticated, session } = useAuth();
+  const location = useLocation();
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  if (!session.onboardingCompleted && location.pathname !== '/onboarding') {
+    return <Navigate to="/onboarding" replace />;
+  }
+
+  if (allowedRoles && !allowedRoles.includes(session.user.role)) {
+    return <Navigate to="/agenda" replace />;
+  }
+
+  return children;
+}
+
+export default ProtectedRoute;

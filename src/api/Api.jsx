@@ -1,14 +1,52 @@
+import { STORAGE_KEY } from '../context/auth-context';
+
 const API = import.meta.env.VITE_API;
 
-async function request(path, options) {
-  const res = await fetch(`${API}${path}`, options);
+function getAuthMetadata() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return {};
+    const session = JSON.parse(raw);
+    return {
+      token: session?.token,
+      tenantId: session?.tenant?.id,
+    };
+  } catch {
+    return {};
+  }
+}
+
+async function request(path, options = {}) {
+  const { token, tenantId } = getAuthMetadata();
+
+  const headers = {
+    ...(options.headers || {}),
+  };
+
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+
+  if (tenantId) {
+    headers['X-Tenant-Id'] = String(tenantId);
+  }
+
+  const res = await fetch(`${API}${path}`, {
+    ...options,
+    headers,
+  });
 
   if (!res.ok) {
     const text = await res.text();
     throw new Error(text || `Error ${res.status} en ${path}`);
   }
 
-  return res.json();
+  const contentType = res.headers.get('content-type') || '';
+  if (contentType.includes('application/json')) {
+    return res.json();
+  }
+
+  return null;
 }
 
 export async function getNegocios() {

@@ -1,17 +1,26 @@
-import { Card } from "primereact/card";
-import { Button } from "primereact/button";
-import { useState, useEffect } from "react";
-import { getServicios } from "../api/Api";
+import { Card } from 'primereact/card';
+import { useState, useEffect } from 'react';
+import { getServicios } from '../api/Api';
+import { useAuth } from '../context/useAuth';
 
-export default function HomePage({ onReservar }) {
+export default function HomePage() {
+  const { session } = useAuth();
   const [servicios, setServicios] = useState([]);
+  const [mensaje, setMensaje] = useState('');
 
   useEffect(() => {
-    getServicios().then((data) => setServicios(data));
-  }, []);
+    const tenantId = session?.tenant?.id;
+    if (!tenantId) return;
+
+    getServicios(tenantId)
+      .then((data) => setServicios(data || []))
+      .catch((error) => setMensaje(`No se pudieron obtener servicios: ${error.message}`));
+  }, [session?.tenant?.id]);
 
   return (
     <div className="grid p-4 gap-4">
+      <h2>Portal del negocio: {session?.tenant?.name}</h2>
+      {mensaje && <p>{mensaje}</p>}
       {servicios.map((servicio) => (
         <Card
           key={servicio.id}
@@ -23,11 +32,6 @@ export default function HomePage({ onReservar }) {
               <li key={emp.id}>{emp.nombre}</li>
             ))}
           </ul>
-          <Button
-            label="Reservar"
-            onClick={() => onReservar(servicio)}
-            className="p-button-success"
-          />
         </Card>
       ))}
     </div>
