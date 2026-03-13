@@ -1,25 +1,25 @@
-import { Card } from 'primereact/card';
-import { useState, useEffect } from 'react';
-import { getServicios } from '../api/Api';
-import { useAuth } from '../context/useAuth';
+import { Card } from "primereact/card";
+import { useState, useEffect } from "react";
+import { getServicios } from "../api/Api";
+import { useAuth } from "../context/useAuth";
 
 export default function HomePage() {
   const { session } = useAuth();
   const [servicios, setServicios] = useState([]);
-  const [mensaje, setMensaje] = useState('');
+  const [mensaje, setMensaje] = useState("");
 
   useEffect(() => {
-    const tenantId = session?.tenant?.id;
-    if (!tenantId) return;
+    const negocioId = session?.tenant?.id || session?.user?.negocioId;
+    if (!negocioId) return;
 
-    getServicios(tenantId)
+    getServicios(negocioId)
       .then((data) => setServicios(data || []))
-      .catch((error) => setMensaje(`No se pudieron obtener servicios: ${error.message}`));
-  }, [session?.tenant?.id]);
+      .catch((error) => setMensaje(`No se pudieron cargar servicios: ${error.message}`));
+  }, [session?.tenant?.id, session?.user?.negocioId]);
 
   return (
     <div className="grid p-4 gap-4">
-      <h2>Portal del negocio: {session?.tenant?.name}</h2>
+      <h2>{session?.tenant?.nombre || "Panel del negocio"}</h2>
       {mensaje && <p>{mensaje}</p>}
       {servicios.map((servicio) => (
         <Card

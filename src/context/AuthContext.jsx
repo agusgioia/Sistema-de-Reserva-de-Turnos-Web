@@ -1,7 +1,7 @@
-import { useState } from 'react';
-import { AuthContext, STORAGE_KEY } from './auth-context';
+import { useState } from "react";
+import { AuthContext, STORAGE_KEY } from "./auth-context";
 
-function readSession() {
+function readStoredSession() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     return raw ? JSON.parse(raw) : null;
@@ -19,69 +19,16 @@ function persistSession(session) {
 }
 
 export function AuthProvider({ children }) {
-  const [session, setSession] = useState(() => readSession());
+  const [session, setSession] = useState(() => readStoredSession());
 
-  const login = ({ email, role = 'OWNER' }) => {
-    const nextSession = {
-      token: 'demo-token',
-      user: {
-        email,
-        role,
-        name: email?.split('@')[0] || 'demo',
-      },
-      tenant: {
-        id: 1,
-        name: 'Mi Negocio',
-      },
-      plan: {
-        code: 'STARTER',
-        limits: {
-          employees: 2,
-          services: 8,
-        },
-      },
-      onboardingCompleted: role !== 'OWNER',
+  const login = ({ token, user, tenant }) => {
+    const next = {
+      token: token || "demo-token",
+      user,
+      tenant: tenant || { id: user?.negocioId || 1, nombre: "Negocio" },
     };
-
-    setSession(nextSession);
-    persistSession(nextSession);
-  };
-
-  const completeOnboarding = ({ businessName, tenantId = 1 }) => {
-    if (!session) return;
-
-    const nextSession = {
-      ...session,
-      onboardingCompleted: true,
-      tenant: {
-        id: tenantId,
-        name: businessName,
-      },
-    };
-
-    setSession(nextSession);
-    persistSession(nextSession);
-  };
-
-  const updatePlan = (code) => {
-    if (!session) return;
-
-    const planCatalog = {
-      STARTER: { employees: 2, services: 8 },
-      PRO: { employees: 10, services: 30 },
-      SCALE: { employees: 999, services: 999 },
-    };
-
-    const nextSession = {
-      ...session,
-      plan: {
-        code,
-        limits: planCatalog[code] || planCatalog.STARTER,
-      },
-    };
-
-    setSession(nextSession);
-    persistSession(nextSession);
+    setSession(next);
+    persistSession(next);
   };
 
   const logout = () => {
@@ -94,8 +41,6 @@ export function AuthProvider({ children }) {
     isAuthenticated: Boolean(session?.token),
     login,
     logout,
-    completeOnboarding,
-    updatePlan,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

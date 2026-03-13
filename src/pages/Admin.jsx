@@ -1,43 +1,28 @@
-import { useEffect, useMemo, useState } from 'react';
-import { DataTable } from 'primereact/datatable';
-import { Column } from 'primereact/column';
-import { getServicios } from '../api/Api';
-import { useAuth } from '../context/useAuth';
-import '../css/Page.css';
+import { useEffect, useState } from "react";
+import { DataTable } from "primereact/datatable";
+import { Column } from "primereact/column";
+import { getServicios } from "../api/Api";
+import { useAuth } from "../context/useAuth";
+import "../css/Page.css";
 
 function AdminPage() {
   const { session } = useAuth();
   const [servicios, setServicios] = useState([]);
-  const [mensaje, setMensaje] = useState('');
-
-  const serviceLimit = session?.plan?.limits?.services ?? 0;
-  const exceededServices = useMemo(
-    () => serviceLimit > 0 && servicios.length > serviceLimit,
-    [serviceLimit, servicios.length],
-  );
+  const [mensaje, setMensaje] = useState("");
 
   useEffect(() => {
-    const tenantId = session?.tenant?.id;
-    if (!tenantId) return;
+    const negocioId = session?.tenant?.id || session?.user?.negocioId;
+    if (!negocioId) return;
 
-    getServicios(tenantId)
+    getServicios(negocioId)
       .then((data) => setServicios(data || []))
       .catch((error) => setMensaje(`No se pudieron cargar servicios: ${error.message}`));
-  }, [session?.tenant?.id]);
+  }, [session?.tenant?.id, session?.user?.negocioId]);
 
   return (
     <div className="page">
-      <h1 className="page-title">Panel Admin SaaS</h1>
-      <p>Plan activo: {session?.plan?.code}</p>
-      <p>
-        Límite de servicios: {serviceLimit} | Cargados: {servicios.length}
-      </p>
-
-      {exceededServices && (
-        <p>
-          Alcanzaste el límite del plan actual. Actualizá el plan para seguir agregando servicios.
-        </p>
-      )}
+      <h1 className="page-title">Panel Admin</h1>
+      <p>Rol activo: {session?.user?.rol}</p>
 
       {mensaje && <p>{mensaje}</p>}
 

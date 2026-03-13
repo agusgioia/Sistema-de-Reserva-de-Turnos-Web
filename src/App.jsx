@@ -1,14 +1,14 @@
-import { BrowserRouter as Router, Navigate, Route, Routes } from 'react-router-dom';
-import { PrimeReactProvider } from 'primereact/api';
-import Navbar from './components/Navbar';
-import Footer from './components/Footer';
-import Agenda from './pages/Agenda';
-import Home from './pages/Home';
-import Admin from './pages/Admin';
-import Login from './pages/Login';
-import Onboarding from './pages/Onboarding';
-import Billing from './pages/Billing';
-import ProtectedRoute from './components/ProtectedRoute';
+import { BrowserRouter as Router, Navigate, Route, Routes } from "react-router-dom";
+import { PrimeReactProvider } from "primereact/api";
+import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
+import Agenda from "./pages/Agenda";
+import Home from "./pages/Home";
+import Admin from "./pages/Admin";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Forbidden from "./pages/Forbidden";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
   return (
@@ -17,18 +17,13 @@ function App() {
         <Navbar />
         <Routes>
           <Route path="/login" element={<Login />} />
-          <Route
-            path="/onboarding"
-            element={
-              <ProtectedRoute allowedRoles={['OWNER']}>
-                <Onboarding />
-              </ProtectedRoute>
-            }
-          />
+          <Route path="/register" element={<Register />} />
+          <Route path="/forbidden" element={<Forbidden />} />
+
           <Route
             path="/"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowedRoles={["OWNER", "ADMIN", "RECEPTIONIST"]}>
                 <Home />
               </ProtectedRoute>
             }
@@ -36,7 +31,7 @@ function App() {
           <Route
             path="/agenda"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowedRoles={["OWNER", "ADMIN", "RECEPTIONIST", "EMPLOYEE", "CLIENT"]}>
                 <Agenda />
               </ProtectedRoute>
             }
@@ -44,16 +39,8 @@ function App() {
           <Route
             path="/admin"
             element={
-              <ProtectedRoute allowedRoles={['OWNER', 'RECEPTIONIST']}>
+              <ProtectedRoute allowedRoles={["OWNER", "ADMIN"]}>
                 <Admin />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/billing"
-            element={
-              <ProtectedRoute allowedRoles={['OWNER']}>
-                <Billing />
               </ProtectedRoute>
             }
           />

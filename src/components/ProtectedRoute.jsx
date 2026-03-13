@@ -1,5 +1,5 @@
-import { Navigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../context/useAuth';
+import { Navigate, useLocation } from "react-router-dom";
+import { useAuth } from "../context/useAuth";
 
 function ProtectedRoute({ children, allowedRoles }) {
   const { isAuthenticated, session } = useAuth();
@@ -9,17 +9,8 @@ function ProtectedRoute({ children, allowedRoles }) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  const requiresOnboarding =
-    session?.user?.role === 'OWNER' &&
-    !session?.onboardingCompleted &&
-    location.pathname !== '/onboarding';
-
-  if (requiresOnboarding) {
-    return <Navigate to="/onboarding" replace />;
-  }
-
-  if (allowedRoles && !allowedRoles.includes(session.user.role)) {
-    return <Navigate to="/agenda" replace />;
+  if (allowedRoles && !allowedRoles.includes(session?.user?.rol)) {
+    return <Navigate to="/forbidden" replace />;
   }
 
   return children;

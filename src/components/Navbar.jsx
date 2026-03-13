@@ -1,53 +1,57 @@
-import { Menubar } from 'primereact/menubar';
-import { Button } from 'primereact/button';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/useAuth';
-import '../css/Navbar.css';
+import { Menubar } from "primereact/menubar";
+import { Button } from "primereact/button";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/useAuth";
+import "../css/Navbar.css";
 
 function Navbar() {
   const navigate = useNavigate();
-  const { session, isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, session, logout } = useAuth();
+  const role = session?.user?.rol;
 
   const items = [
     {
-      label: 'Home',
-      icon: 'pi pi-home',
-      command: () => navigate('/'),
+      label: "Home",
+      icon: "pi pi-home",
+      command: () => navigate("/"),
+      visible: isAuthenticated && ["OWNER", "ADMIN", "RECEPTIONIST"].includes(role),
+    },
+    {
+      label: "Agenda",
+      icon: "pi pi-calendar",
+      command: () => navigate("/agenda"),
       visible: isAuthenticated,
     },
     {
-      label: 'Agenda',
-      icon: 'pi pi-calendar',
-      command: () => navigate('/agenda'),
-      visible: isAuthenticated,
-    },
-    {
-      label: 'Admin Panel',
-      icon: 'pi pi-cog',
-      command: () => navigate('/admin'),
-      visible: isAuthenticated && session?.user?.role === 'OWNER',
-    },
-    {
-      label: 'Facturación',
-      icon: 'pi pi-credit-card',
-      command: () => navigate('/billing'),
-      visible: isAuthenticated && session?.user?.role === 'OWNER',
+      label: "Admin Panel",
+      icon: "pi pi-cog",
+      command: () => navigate("/admin"),
+      visible: isAuthenticated && ["OWNER", "ADMIN"].includes(role),
     },
   ];
 
   const start = (
-    <div className="navbar-logo" onClick={() => navigate(isAuthenticated ? '/' : '/login')}>
-      TURNOS SaaS
-    </div>
-  );
-
-  const end = isAuthenticated ? (
-    <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-      <span>{session?.user?.email}</span>
-      <Button label="Salir" severity="secondary" onClick={logout} />
+    <div className="navbar-logo" onClick={() => navigate(isAuthenticated ? "/agenda" : "/login") }>
+      TURNOS
     </div>
   ) : (
     <Button label="Ingresar" onClick={() => navigate('/login')} />
+  );
+
+  const end = isAuthenticated ? (
+    <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+      <span>{session?.user?.email} ({role})</span>
+      <Button
+        label="Salir"
+        severity="secondary"
+        onClick={() => {
+          logout();
+          navigate("/login", { replace: true });
+        }}
+      />
+    </div>
+  ) : (
+    <Button label="Ingresar" onClick={() => navigate("/login")} />
   );
 
   return (
