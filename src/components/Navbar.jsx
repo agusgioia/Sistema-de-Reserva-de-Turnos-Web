@@ -30,17 +30,14 @@ function Navbar() {
     },
   ];
 
-  const handleLogoClick = () => {
-    navigate(isAuthenticated ? "/agenda" : "/login");
-  };
 
   const handleLogout = () => {
     logout();
     navigate("/login", { replace: true });
   };
 
-  const start = (
-    <div className="navbar-logo" onClick={handleLogoClick}>
+  const start = isAuthenticated ?(
+    <div className="navbar-logo" onClick={()=>navigate('/agenda')}>
       TURNOS
     </div>
   ) : (
