@@ -43,6 +43,24 @@ function Navbar() {
     <div className="navbar-logo" onClick={handleLogoClick}>
       TURNOS
     </div>
+  ) : (
+    <Button label="Ingresar" onClick={() => navigate('/login')} />
+  );
+
+  const end = isAuthenticated ? (
+    <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+      <span>{session?.user?.email} ({role})</span>
+      <Button
+        label="Salir"
+        severity="secondary"
+        onClick={() => {
+          logout();
+          navigate("/login", { replace: true });
+        }}
+      />
+    </div>
+  ) : (
+    <Button label="Ingresar" onClick={() => navigate("/login")} />
   );
 
   let end = <Button label="Ingresar" onClick={() => navigate("/login")} />;
