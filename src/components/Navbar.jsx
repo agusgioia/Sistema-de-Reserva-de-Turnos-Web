@@ -30,12 +30,10 @@ function Navbar() {
     },
   ];
 
-  const start = isAuthenticated ?(
-    <div className="navbar-logo" onClick={()=>navigate('/agenda')}>
+  const start = isAuthenticated && (
+    <div className="navbar-logo" onClick={() => navigate('/agenda')}>
       TURNOS
     </div>
-  ) : (
-    <Button label="Ingresar" onClick={() => navigate('/login')} />
   );
 
   const end = isAuthenticated ? (
