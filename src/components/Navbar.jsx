@@ -34,6 +34,8 @@ function Navbar() {
     <div className="navbar-logo" onClick={() => navigate(isAuthenticated ? "/agenda" : "/login") }>
       TURNOS
     </div>
+  ) : (
+    <Button label="Ingresar" onClick={() => navigate('/login')} />
   );
 
   const end = isAuthenticated ? (
