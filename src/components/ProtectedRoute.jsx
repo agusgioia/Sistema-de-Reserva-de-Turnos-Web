@@ -9,7 +9,12 @@ function ProtectedRoute({ children, allowedRoles }) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  if (!session.onboardingCompleted && location.pathname !== '/onboarding') {
+  const requiresOnboarding =
+    session?.user?.role === 'OWNER' &&
+    !session?.onboardingCompleted &&
+    location.pathname !== '/onboarding';
+
+  if (requiresOnboarding) {
     return <Navigate to="/onboarding" replace />;
   }
 

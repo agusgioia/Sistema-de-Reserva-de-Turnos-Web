@@ -20,6 +20,21 @@ function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
 
+  const resolveRedirect = () => {
+    const fromPath = location.state?.from?.pathname;
+    const fallback = role === 'OWNER' ? '/onboarding' : '/agenda';
+
+    if (!fromPath || fromPath === '/login') {
+      return fallback;
+    }
+
+    if (role !== 'OWNER' && ['/onboarding', '/billing'].includes(fromPath)) {
+      return fallback;
+    }
+
+    return fromPath;
+  };
+
   const handleSubmit = () => {
     if (!email.trim()) {
       setError('Ingresá un email válido.');
@@ -27,9 +42,7 @@ function LoginPage() {
     }
 
     login({ email, role });
-    const fallback = role === 'OWNER' ? '/onboarding' : '/agenda';
-    const redirectTo = location.state?.from?.pathname || fallback;
-    navigate(redirectTo, { replace: true });
+    navigate(resolveRedirect(), { replace: true });
   };
 
   return (

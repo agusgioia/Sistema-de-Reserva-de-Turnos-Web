@@ -40,7 +40,7 @@ export function AuthProvider({ children }) {
           services: 8,
         },
       },
-      onboardingCompleted: false,
+      onboardingCompleted: role !== 'OWNER',
     };
 
     setSession(nextSession);
