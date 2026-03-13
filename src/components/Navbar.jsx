@@ -30,8 +30,8 @@ function Navbar() {
     },
   ];
 
-  const start = (
-    <div className="navbar-logo" onClick={() => navigate(isAuthenticated ? "/agenda" : "/login") }>
+  const start = isAuthenticated ? (
+    <div className="navbar-logo" onClick={() => navigate("/agenda") }>
       TURNOS
     </div>
   ) : (
