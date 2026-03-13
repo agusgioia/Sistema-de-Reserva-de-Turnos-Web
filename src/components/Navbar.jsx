@@ -30,12 +30,6 @@ function Navbar() {
     },
   ];
 
-
-  const handleLogout = () => {
-    logout();
-    navigate("/login", { replace: true });
-  };
-
   const start = isAuthenticated ?(
     <div className="navbar-logo" onClick={()=>navigate('/agenda')}>
       TURNOS
@@ -59,19 +53,6 @@ function Navbar() {
   ) : (
     <Button label="Ingresar" onClick={() => navigate("/login")} />
   );
-
-  let end = <Button label="Ingresar" onClick={() => navigate("/login")} />;
-
-  if (isAuthenticated) {
-    end = (
-      <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-        <span>
-          {session?.user?.email} ({role})
-        </span>
-        <Button label="Salir" severity="secondary" onClick={handleLogout} />
-      </div>
-    );
-  }
 
   return (
     <div className="navbar-wrapper">
